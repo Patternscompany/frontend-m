@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Download, LogOut, FileText, User, Calendar } from 'lucide-react';
+import { Plus, Download, LogOut, FileText, User, Calendar, Hash, Activity } from 'lucide-react';
 import { format } from 'date-fns';
 import API_BASE_URL from '../config';
 import Logo from '../assets/logo.png';
@@ -48,75 +48,103 @@ const Dashboard = () => {
 
     return (
         <div className="container">
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <header className="header">
                 <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--primary)' }}>
-                        <img src={Logo} alt="" className='' style={{ width: '150px' }} />
-                    </h1>
-                    <p style={{ color: 'var(--text-muted)' }}>Lab Management Dashboard</p>
+                    <img src={Logo} alt="Vamika Diagnostics" className="logo-img" />
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.25rem' }}>Lab Management Dashboard</p>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                    <Link to="/new-registration" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Plus size={20} /> New Registration
+                <div style={{ display: 'flex', gap: '0.75rem' }} className="header-actions">
+                    <Link to="/new-registration" className="btn btn-primary" style={{ padding: '0.75rem 1.5rem' }}>
+                        <Plus size={18} /> New Registration
                     </Link>
-                    <button onClick={handleLogout} className="btn" style={{ backgroundColor: 'var(--danger)', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <LogOut size={20} /> Logout
+                    <button onClick={handleLogout} className="btn btn-secondary" style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}>
+                        <LogOut size={18} /> Logout
                     </button>
                 </div>
             </header>
 
-            <div className="glass" style={{ padding: '1.5rem', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-                <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <FileText size={24} /> Recent Registrations
-                </h2>
+            <div className="card" style={{ padding: '0' }}>
+                <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 style={{ fontSize: '1.25rem', marginBottom: '0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <FileText size={20} color="var(--primary)" /> Recent Registrations
+                    </h2>
+                    <span style={{ fontSize: '0.75rem', padding: '0.25rem 0.75rem', borderRadius: '1rem', background: 'var(--primary-light)', color: 'var(--primary)', fontWeight: '600' }}>
+                        {registrations.length} Total
+                    </span>
+                </div>
 
                 {loading ? (
-                    <p>Loading...</p>
+                    <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                        <Activity className="animate-spin" size={24} style={{ marginBottom: '0.5rem' }} />
+                        <p>Loading registrations...</p>
+                    </div>
                 ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <div className="table-container" style={{ border: 'none', boxShadow: 'none' }}>
+                        <table className="app-table">
                             <thead>
-                                <tr style={{ textAlign: 'left', borderBottom: '2px solid var(--border)' }}>
-                                    <th style={{ padding: '1rem' }}>Date</th>
-                                    <th style={{ padding: '1rem' }}>ID</th>
-                                    <th style={{ padding: '1rem' }}>Patient Name</th>
-                                    <th style={{ padding: '1rem' }}>Referred By</th>
-                                    <th style={{ padding: '1rem' }}>Net Amount</th>
-                                    <th style={{ padding: '1rem' }}>Action</th>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Patient Details</th>
+                                    <th>Patient ID</th>
+                                    <th>Referred By</th>
+                                    <th>Amount</th>
+                                    <th style={{ textAlign: 'right' }}>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {registrations.map((reg) => (
-                                    <tr key={reg._id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s' }}>
-                                        <td style={{ padding: '1rem' }}>
+                                    <tr key={reg._id}>
+                                        <td data-label="Date">
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <Calendar size={16} color="var(--text-muted)" />
-                                                {format(new Date(reg.createdAt), 'dd MMM yyyy')}
+                                                <Calendar size={14} color="var(--text-muted)" />
+                                                <span style={{ fontSize: '0.875rem' }}>{format(new Date(reg.createdAt), 'dd MMM yyyy')}</span>
                                             </div>
                                         </td>
-                                        <td style={{ padding: '1rem', fontWeight: 'bold' }}>{reg.patientId}</td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <User size={16} color="var(--text-muted)" />
-                                                {reg.patientName} ( {reg.age}Y / {reg.gender} )
+                                        <td data-label="Patient Details">
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '600' }}>
+                                                    <User size={14} color="var(--primary)" />
+                                                    {reg.patientName}
+                                                </div>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: '1.4rem' }}>
+                                                    {reg.age}Y / {reg.gender}
+                                                </span>
                                             </div>
                                         </td>
-                                        <td style={{ padding: '1rem' }}>{reg.referredBy}</td>
-                                        <td style={{ padding: '1rem', fontWeight: 'bold', color: 'var(--success)' }}>₹{reg.netAmount}</td>
-                                        <td style={{ padding: '1rem' }}>
+                                        <td data-label="Patient ID">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--secondary)', fontSize: '0.875rem' }}>
+                                                <Hash size={14} color="var(--text-muted)" />
+                                                {reg.patientId}
+                                            </div>
+                                        </td>
+                                        <td data-label="Referred By">
+                                            <span style={{ fontSize: '0.875rem' }}>{reg.referredBy}</span>
+                                        </td>
+                                        <td data-label="Amount">
+                                            <span className="badge badge-success">₹{reg.netAmount}</span>
+                                        </td>
+                                        <td style={{ textAlign: 'right' }}>
                                             <button
                                                 onClick={() => handleDownload(reg._id, reg.patientName)}
-                                                className="btn"
-                                                style={{ backgroundColor: 'var(--primary)', color: 'white', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                                                className="btn btn-secondary"
+                                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem' }}
                                             >
-                                                <Download size={16} /> Download
+                                                <Download size={14} /> Report
                                             </button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                        {registrations.length === 0 && <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No registrations found.</p>}
+                        {registrations.length === 0 && (
+                            <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--text-muted)' }}>
+                                <FileText size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
+                                <p>No registrations found.</p>
+                                <Link to="/new-registration" className="btn btn-primary" style={{ marginTop: '1rem' }}>
+                                    Create First Registration
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
