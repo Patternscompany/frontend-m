@@ -1,0 +1,15 @@
+# Ignore node_modules
+/node_modules
+# Ignore log files
+/*.log
+# Ignore cache directory
+/.cache
+# Ignore yarn error file
+/yarn-error.log
+# Ignore yarn debug file
+/yarn-debug.log
+# Ignore yarn integrity file
+/yarn-integrity.chksum
+# Ignore pnpm files
+.pnpm-store
+pnpm-debug.log
